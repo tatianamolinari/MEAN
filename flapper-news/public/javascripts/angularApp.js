@@ -1,5 +1,4 @@
 
-
 var app = angular.module('flapperNews', ['ui.router']); //imports?
 
 app.config([
@@ -111,6 +110,8 @@ app.factory('posts', ['$http', 'auth', function($http, auth){
   var o = {
     posts: []
   };
+
+
   
   o.get = function(id) {
 	  return $http.get('/posts/' + id).then(function(res){
@@ -168,10 +169,12 @@ app.controller('PostsCtrl', [
 	  $scope.isLoggedIn = auth.isLoggedIn;
 	
 	$scope.addComment = function(){
-	  if($scope.body === '') { return; }
+
+	  if(!$scope.body || $scope.body === '') { return; }
 	  posts.addComment(post._id, {
 		body: $scope.body,
 		author: auth.currentUser,
+		date: Date.now
 	  }).success(function(comment) {
 		$scope.post.comments.push(comment);
 	  });
@@ -182,10 +185,6 @@ app.controller('PostsCtrl', [
 	  posts.upvoteComment(post, comment);
 	};
 	
-	$scope.getMomentFromDate = function(date){
-	  return moment(date).fromNow;
-	};
-
 }]);
 
 
@@ -196,6 +195,7 @@ app.controller('MainCtrl', [
 
 function($scope, posts, auth){
   $scope.test = 'Hello putos!';
+  $scope.order = "-upvotes"
   $scope.isLoggedIn = auth.isLoggedIn;
   
   $scope.posts =  posts.posts;
@@ -212,6 +212,10 @@ function($scope, posts, auth){
 	  });
 	  $scope.title = '';
 	  $scope.link = '';
+	};
+
+	$scope.changeOrderTo = function(an_order){
+	  $scope.order = an_order
 	};
 }
 ]);
